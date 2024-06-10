@@ -1,0 +1,15 @@
+{
+  "originHash" : "10bad597f4ffcd916b050be13c961673f080a1e507242626e4543cd42262b8ff",
+  "pins" : [
+    {
+      "identity" : "swift-logger",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Kuniwak/swift-logger",
+      "state" : {
+        "revision" : "c65e942927d2214677db8751c9dd8cd5636b0359",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}
