@@ -18,7 +18,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Kuniwak/swift-logger", .upToNextMajor(from: "1.1.0"))
+        .package(url: "https://github.com/Kuniwak/swift-logger.git", .upToNextMajor(from: "1.1.0"))
     ],
     targets: [
         .target(
