@@ -38,7 +38,13 @@ public protocol CentralManagerProtocol {
 public class CentralManager: NSObject, CentralManagerProtocol {
     // MARK: - Properties from CBManager
     public var state: CBManagerState { centralManager.state }
-    public var authorization: CBManagerAuthorization { centralManager.authorization }
+    public var authorization: CBManagerAuthorization {
+        if #available(iOS 13.1, *) {
+            return CBCentralManager.authorization
+        } else {
+            return centralManager.authorization
+        }
+    }
     
     // MARK: - Properties from CBCentralManager
     public var isScanning: Bool { centralManager.isScanning }
