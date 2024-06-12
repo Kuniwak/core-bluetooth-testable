@@ -1,7 +1,7 @@
 import CoreBluetooth
 
 
-public protocol DescriptorProtocol: Equatable {
+public protocol DescriptorProtocol {
     // MARK: - Properties from CBAttribute
     var uuid: CBUUID { get }
     
