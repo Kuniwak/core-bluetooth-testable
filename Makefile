@@ -1,4 +1,4 @@
-SCHEME := core-bluetooth-testable
+SCHEME := core-bluetooth-testable-Package
 SCRIPTS_PATH := Scripts
 XCODEBUILD_SCRIPTS_PATH := ${SCRIPTS_PATH}/xcodebuild-scripts
 
