@@ -13,12 +13,12 @@ public class StubCharacteristic: CharacteristicProtocol {
     
     
     public init(
-        uuid: CBUUID,
+        uuid: CBUUID = CBUUID(nsuuid: StubUUID.zero),
         service: CBService? = nil,
-        properties: CBCharacteristicProperties,
+        properties: CBCharacteristicProperties = [],
         value: Data? = nil,
         descriptors: [CBDescriptor]? = nil,
-        isNotifying: Bool
+        isNotifying: Bool = false
     ) {
         self.uuid = uuid
         self.service = service

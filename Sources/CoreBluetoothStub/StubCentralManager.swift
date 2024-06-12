@@ -44,11 +44,11 @@ public class StubCentralManager: CentralManagerProtocol {
     
     // MARK: - Initializers
     public init(
-        state: CBManagerState,
-        authorization: CBManagerAuthorization,
-        isScanning: Bool,
-        peripherals: [any PeripheralProtocol],
-        connectedPeipherals: [any PeripheralProtocol]
+        state: CBManagerState = .unknown,
+        authorization: CBManagerAuthorization = .notDetermined,
+        isScanning: Bool = false,
+        peripherals: [any PeripheralProtocol] = [],
+        connectedPeipherals: [any PeripheralProtocol] = []
     ) {
         self.authorization = authorization
         self.isScanning = isScanning

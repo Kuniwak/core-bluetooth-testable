@@ -66,12 +66,12 @@ public class StubPeripheral: PeripheralProtocol {
 
     // MARK: - Initializers
     private init(
-        identifier: UUID,
-        name: String?,
-        state: CBPeripheralState,
-        services: [any ServiceProtocol]?,
-        canSendWriteWithoutResponse: Bool,
-        maximumWriteValueLengthResult: Int
+        identifier: UUID = StubUUID.zero,
+        name: String? = nil,
+        state: CBPeripheralState = .disconnected,
+        services: [any ServiceProtocol]? = nil,
+        canSendWriteWithoutResponse: Bool = false,
+        maximumWriteValueLengthResult: Int = 0
     ) {
         self.identifier = identifier
         self.name = name

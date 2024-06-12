@@ -12,9 +12,9 @@ public class StubService: ServiceProtocol {
     
     
     public init(
-        uuid: CBUUID,
+        uuid: CBUUID = CBUUID(nsuuid: StubUUID.zero),
         peripheral: CBPeripheral? = nil,
-        isPrimary: Bool,
+        isPrimary: Bool = false,
         includedServices: [CBService]? = nil,
         characteristics: [CBCharacteristic]? = nil
     ) {
