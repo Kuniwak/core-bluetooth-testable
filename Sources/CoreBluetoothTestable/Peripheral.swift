@@ -3,7 +3,7 @@ import CoreBluetooth
 import Logger
 
 
-public protocol PeripheralProtocol: Equatable {
+public protocol PeripheralProtocol {
     // MARK: - Properties from CBPeer
     var identifier: UUID { get }
     
@@ -48,10 +48,23 @@ public protocol PeripheralProtocol: Equatable {
 }
 
 
-extension PeripheralProtocol {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.identifier == rhs.identifier && lhs._wrapped == rhs._wrapped && type(of: lhs) == type(of: rhs)
-    }
+
+public func == (lhs: any PeripheralProtocol, rhs: any PeripheralProtocol) -> Bool {
+    return lhs.identifier == rhs.identifier
+        && lhs.name == rhs.name
+        && lhs.state == rhs.state
+        && lhs.services == rhs.services
+        && lhs.canSendWriteWithoutResponse == rhs.canSendWriteWithoutResponse
+}
+
+
+public func == (lhs: [any PeripheralProtocol], rhs: [any PeripheralProtocol]) -> Bool {
+    return zip(lhs, rhs).allSatisfy { $0 == $1 }
+}
+
+
+public func == (lhs: [any PeripheralProtocol]?, rhs: [any PeripheralProtocol]?) -> Bool {
+    return optionalEquals(lhs, rhs) { $0 == $1 }
 }
 
 
@@ -69,7 +82,7 @@ public class Peripheral: NSObject, PeripheralProtocol {
     // MARK: - Properties from CBPeripheral
     public var name: String? { peripheral.name }
     public var state: CBPeripheralState { peripheral.state }
-    public var services: [any ServiceProtocol]? { peripheral.services.map{ $0.map(Service.init(wrapping:)) } }
+    public var services: [any ServiceProtocol]? { peripheral.services.map{ $0.map { Service.init(wrapping: $0, logger: logger) } } }
     public var canSendWriteWithoutResponse: Bool { peripheral.canSendWriteWithoutResponse }
     
     // MARK: - Publishers from CBPeripheralDelegate
@@ -327,7 +340,7 @@ extension Peripheral: CBPeripheralDelegate {
     
     public func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
         logger.trace()
-        didModifyServicesSubject.send(invalidatedServices.map(Service.init(wrapping:)))
+        didModifyServicesSubject.send(invalidatedServices.map { Service.init(wrapping: $0, logger: logger) })
     }
     
     
@@ -339,7 +352,7 @@ extension Peripheral: CBPeripheralDelegate {
     
     public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         logger.trace()
-        let services = peripheral.services.map{ $0.map(Service.init(wrapping:)) }
+        let services = peripheral.services.map { $0.map { Service.init(wrapping: $0, logger: logger) } }
         didDiscoverServicesSubject.send((services, error))
     }
     
@@ -347,28 +360,28 @@ extension Peripheral: CBPeripheralDelegate {
     public func peripheral(_ peripheral: CBPeripheral, didDiscoverIncludedServicesFor service: CBService, error: Error?) {
         logger.trace()
         
-        let includedServices = service.includedServices.map{ $0.map(Service.init(wrapping:)) }
-        didDiscoverIncludedServicesForServiceSubject.send((includedServices, Service(wrapping: service), error))
+        let includedServices = service.includedServices.map { $0.map { Service.init(wrapping: $0, logger: logger) } }
+        didDiscoverIncludedServicesForServiceSubject.send((includedServices, Service(wrapping: service, logger: logger), error))
     }
     
     
     public func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         logger.trace()
         
-        let characteristics = service.characteristics.map{ $0.map(Characteristic.init(wrapping:)) }
-        didDiscoverCharacteristicsForServiceSubject.send((characteristics, Service(wrapping: service), error))
+        let characteristics = service.characteristics.map { $0.map { Characteristic.init(wrapping: $0, logger: logger) } }
+        didDiscoverCharacteristicsForServiceSubject.send((characteristics, Service(wrapping: service, logger: logger), error))
     }
     
     
     public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         logger.trace()
-        didUpdateValueForCharacteristicSubject.send((Characteristic(wrapping: characteristic), error))
+        didUpdateValueForCharacteristicSubject.send((Characteristic(wrapping: characteristic, logger: logger), error))
     }
     
     
     public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         logger.trace()
-        didWriteValueForCharacteristicSubject.send((Characteristic(wrapping: characteristic), error))
+        didWriteValueForCharacteristicSubject.send((Characteristic(wrapping: characteristic, logger: logger), error))
     }
 }
 
