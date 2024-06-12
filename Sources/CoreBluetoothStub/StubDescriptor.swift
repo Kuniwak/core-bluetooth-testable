@@ -10,7 +10,7 @@ public class StubDescriptor: DescriptorProtocol {
     
     
     public init(
-        uuid: CBUUID,
+        uuid: CBUUID = CBUUID(nsuuid: StubUUID.zero),
         characteristic: (any CharacteristicProtocol)? = nil,
         value: Any? = nil
     ) {
