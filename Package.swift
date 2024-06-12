@@ -16,6 +16,10 @@ let package = Package(
             name: "CoreBluetoothTestable",
             targets: ["CoreBluetoothTestable"]
         ),
+        .library(
+            name: "CoreBluetoothStub",
+            targets: ["CoreBluetoothStub"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/Kuniwak/swift-logger.git", .upToNextMajor(from: "1.1.0"))
@@ -29,6 +33,12 @@ let package = Package(
         ),
         .testTarget(
             name: "CoreBluetoothTestableTests",
+            dependencies: [
+                "CoreBluetoothTestable",
+            ]
+        ),
+        .target(
+            name: "CoreBluetoothStub",
             dependencies: [
                 "CoreBluetoothTestable",
             ]

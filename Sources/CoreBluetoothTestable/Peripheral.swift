@@ -10,7 +10,7 @@ public protocol PeripheralProtocol: Equatable {
     // MARK: - Properties from CBPeripheral
     var name: String? { get }
     var state: CBPeripheralState { get }
-    var services: [Service]? { get }
+    var services: [any ServiceProtocol]? { get }
     var canSendWriteWithoutResponse: Bool { get }
     
     // MARK: - Methods from CBPeripheral
@@ -69,7 +69,7 @@ public class Peripheral: NSObject, PeripheralProtocol {
     // MARK: - Properties from CBPeripheral
     public var name: String? { peripheral.name }
     public var state: CBPeripheralState { peripheral.state }
-    public var services: [Service]? { peripheral.services.map{ $0.map(Service.init(wrapping:)) } }
+    public var services: [any ServiceProtocol]? { peripheral.services.map{ $0.map(Service.init(wrapping:)) } }
     public var canSendWriteWithoutResponse: Bool { peripheral.canSendWriteWithoutResponse }
     
     // MARK: - Publishers from CBPeripheralDelegate
@@ -380,7 +380,7 @@ public struct AnyPeripheral: PeripheralProtocol {
     // MARK: - Properties from CBPeripheral
     public var name: String? { base.name }
     public var state: CBPeripheralState { base.state }
-    public var services: [Service]? { base.services }
+    public var services: [any ServiceProtocol]? { base.services }
     public var canSendWriteWithoutResponse: Bool { base.canSendWriteWithoutResponse }
     
     // MARK: - Methods from CBPeripheral
