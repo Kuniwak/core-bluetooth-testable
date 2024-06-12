@@ -4,20 +4,20 @@ import CoreBluetoothTestable
 
 public class StubCharacteristic: CharacteristicProtocol {
     public var uuid: CBUUID
-    public var service: CBService?
+    public var service: (any ServiceProtocol)?
     public var properties: CBCharacteristicProperties
     public var value: Data?
-    public var descriptors: [CBDescriptor]?
+    public var descriptors: [any DescriptorProtocol]?
     public var isNotifying: Bool
     public var _wrapped: CBCharacteristic? = nil
     
     
     public init(
         uuid: CBUUID = CBUUID(nsuuid: StubUUID.zero),
-        service: CBService? = nil,
+        service: (any ServiceProtocol)? = nil,
         properties: CBCharacteristicProperties = [],
         value: Data? = nil,
-        descriptors: [CBDescriptor]? = nil,
+        descriptors: [any DescriptorProtocol]? = nil,
         isNotifying: Bool = false
     ) {
         self.uuid = uuid

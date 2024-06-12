@@ -1,6 +1,7 @@
 import Combine
 import CoreBluetooth
 import CoreBluetoothTestable
+import MirrorDiffKit
 
 
 public class SpyPeripheral: PeripheralProtocol {
@@ -37,7 +38,7 @@ public class SpyPeripheral: PeripheralProtocol {
     }
     
     public func readValue(for characteristic: any CharacteristicProtocol) {
-        self.callArgs.append(.readValue(characteristic: characteristic))
+        self.callArgs.append(.readValueCharacteristic(characteristic))
     }
     
     public func maximumWriteValueLength(for type: CBCharacteristicWriteType) -> Int {
@@ -46,7 +47,7 @@ public class SpyPeripheral: PeripheralProtocol {
     }
     
     public func writeValue(_ data: Data, for characteristic: any CharacteristicProtocol, type: CBCharacteristicWriteType) {
-        self.callArgs.append(.writeValue(data: data, characteristic: characteristic, type: type))
+        self.callArgs.append(.writeValueCharacteristic(data: data, characteristic: characteristic, type: type))
     }
     
     public func setNotifyValue(_ enabled: Bool, for characteristic: any CharacteristicProtocol) {
@@ -58,11 +59,11 @@ public class SpyPeripheral: PeripheralProtocol {
     }
     
     public func readValue(for descriptor: any DescriptorProtocol) {
-        self.callArgs.append(.readValue(descriptor: descriptor))
+        self.callArgs.append(.readValueDescriptor(descriptor))
     }
     
     public func writeValue(_ data: Data, for descriptor: any DescriptorProtocol) {
-        self.callArgs.append(.writeValue(data: data, descriptor: descriptor))
+        self.callArgs.append(.writeValueDescriptor(data: data, descriptor: descriptor))
     }
     
     public func openL2CAPChannel(_ psm: CBL2CAPPSM) {
@@ -115,13 +116,52 @@ public class SpyPeripheral: PeripheralProtocol {
         case discoverServices(serviceUUIDs: [CBUUID]?)
         case discoverIncludedServices(includedServiceUUIDs: [CBUUID]?, service: any ServiceProtocol)
         case discoverCharacteristics(characteristicUUIDs: [CBUUID]?, service: any ServiceProtocol)
-        case readValue(characteristic: any CharacteristicProtocol)
+        case readValueCharacteristic(any CharacteristicProtocol)
         case maximumWriteValueLength(type: CBCharacteristicWriteType)
-        case writeValue(data: Data, characteristic: any CharacteristicProtocol, type: CBCharacteristicWriteType)
+        case writeValueCharacteristic(data: Data, characteristic: any CharacteristicProtocol, type: CBCharacteristicWriteType)
         case setNotifyValue(enabled: Bool, characteristic: any CharacteristicProtocol)
         case discoverDescriptors(characteristic: any CharacteristicProtocol)
-        case readValue(descriptor: any DescriptorProtocol)
-        case writeValue(data: Data, descriptor: any DescriptorProtocol)
+        case readValueDescriptor(any DescriptorProtocol)
+        case writeValueDescriptor(data: Data, descriptor: any DescriptorProtocol)
         case openL2CAPChannel(psm: CBL2CAPPSM)
+    }
+}
+
+
+extension SpyPeripheral.CallArg: Equatable {
+    public static func == (lhs: SpyPeripheral.CallArg, rhs: SpyPeripheral.CallArg) -> Bool {
+        switch (lhs, rhs) {
+        case (.readRSSI, .readRSSI):
+            return true
+        case (.discoverServices(serviceUUIDs: let l), .discoverServices(serviceUUIDs: let r)):
+            return l == r
+        case (.discoverIncludedServices(includedServiceUUIDs: let l, service: let ls),
+              .discoverIncludedServices(includedServiceUUIDs: let r, service: let rs)):
+            return l == r && ls == rs
+        case (.discoverCharacteristics(characteristicUUIDs: let l, service: let ls),
+              .discoverCharacteristics(characteristicUUIDs: let r, service: let rs)):
+            return l == r && ls == rs
+        case (.readValueCharacteristic(let l), .readValueCharacteristic(let r)):
+            return l == r
+        case (.maximumWriteValueLength(type: let l), .maximumWriteValueLength(type: let r)):
+            return l == r
+        case (.writeValueCharacteristic(data: let ld, characteristic: let lc, type: let lt),
+              .writeValueCharacteristic(data: let rd, characteristic: let rc, type: let rt)):
+            return ld == rd && lc == rc && lt == rt
+        case (.setNotifyValue(enabled: let le, characteristic: let lc),
+              .setNotifyValue(enabled: let re, characteristic: let rc)):
+            return le == re && lc == rc
+        case (.discoverDescriptors(characteristic: let l), .discoverDescriptors(characteristic: let r)):
+            return l == r
+        case (.readValueDescriptor(let l), .readValueDescriptor(let r)):
+            return l == r
+        case (.writeValueDescriptor(data: let l1, descriptor: let l2),
+              .writeValueDescriptor(data: let r1, descriptor: let r2)):
+            return l1 == r1 && l2 == r2
+        case (.openL2CAPChannel(psm: let l), .openL2CAPChannel(psm: let r)):
+            return l == r
+        default:
+            return false
+        }
     }
 }

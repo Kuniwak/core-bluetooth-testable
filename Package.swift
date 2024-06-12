@@ -22,7 +22,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Kuniwak/swift-logger.git", .upToNextMajor(from: "1.1.0"))
+        .package(url: "https://github.com/Kuniwak/swift-logger.git", .upToNextMajor(from: "1.1.0")),
+        .package(url: "https://github.com/Kuniwak/MirrorDiffKit.git", .upToNextMajor(from: "6.0.0")),
     ],
     targets: [
         .target(
@@ -35,12 +36,14 @@ let package = Package(
             name: "CoreBluetoothTestableTests",
             dependencies: [
                 "CoreBluetoothTestable",
+                "MirrorDiffKit",
             ]
         ),
         .target(
             name: "CoreBluetoothStub",
             dependencies: [
                 "CoreBluetoothTestable",
+                "MirrorDiffKit",
             ]
         )
     ]

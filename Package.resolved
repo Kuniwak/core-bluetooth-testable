@@ -1,9 +1,18 @@
 {
   "pins" : [
     {
+      "identity" : "mirrordiffkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Kuniwak/MirrorDiffKit.git",
+      "state" : {
+        "revision" : "6d721f86bbc91621b382f5a6a5a2ebd135c256e5",
+        "version" : "6.0.0"
+      }
+    },
+    {
       "identity" : "swift-logger",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Kuniwak/swift-logger.git",
+      "location" : "https://github.com/Kuniwak/swift-logger",
       "state" : {
         "revision" : "09ac53a6cb16c4ff254b63c02d5daa6795bc8530",
         "version" : "1.1.0"

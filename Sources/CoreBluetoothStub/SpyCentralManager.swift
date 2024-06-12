@@ -1,6 +1,7 @@
 import Combine
 import CoreBluetooth
 import CoreBluetoothTestable
+import MirrorDiffKit
 
 
 public class SpyCentralManager: CentralManagerProtocol {
@@ -101,5 +102,27 @@ public class SpyCentralManager: CentralManagerProtocol {
         case stopScan
         case connect(peripheral: any PeripheralProtocol, options: [String: Any]?)
         case cancelPeripheralConnection(peripheral: any PeripheralProtocol)
+    }
+}
+
+
+extension SpyCentralManager.CallArg: Equatable {
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.retrievePeripherals(identifiers: let l), .retrievePeripherals(identifiers: let r)):
+            return l == r
+        case (.retrieveConnectedPeripherals(serviceUUIDs: let l), .retrieveConnectedPeripherals(serviceUUIDs: let r)):
+            return l == r
+        case (.scanForPeripherals(serviceUUIDs: let ls, options: let lo), .scanForPeripherals(serviceUUIDs: let rs, options: let ro)):
+            return ls == rs && lo =~ ro
+        case (.stopScan, .stopScan):
+            return true
+        case (.connect(peripheral: let lp, options: let lo), .connect(peripheral: let rp, options: let ro)):
+            return lp == rp && lo =~ ro
+        case (.cancelPeripheralConnection(peripheral: let l), .cancelPeripheralConnection(peripheral: let r)):
+            return l == r
+        default:
+            return false
+        }
     }
 }
