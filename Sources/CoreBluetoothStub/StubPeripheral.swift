@@ -65,7 +65,7 @@ public class StubPeripheral: PeripheralProtocol {
 
 
     // MARK: - Initializers
-    private init(
+    public init(
         identifier: UUID = StubUUID.zero,
         name: String? = nil,
         state: CBPeripheralState = .disconnected,
