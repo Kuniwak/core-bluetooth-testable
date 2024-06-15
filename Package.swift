@@ -29,7 +29,8 @@ let package = Package(
         .target(
             name: "CoreBluetoothTestable",
             dependencies: [
-                .product(name: "Logger", package: "swift-logger")
+                .product(name: "Logger", package: "swift-logger"),
+                "MirrorDiffKit",
             ]
         ),
         .testTarget(
