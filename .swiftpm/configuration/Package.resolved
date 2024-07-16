@@ -12,7 +12,7 @@
     {
       "identity" : "swift-logger",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Kuniwak/swift-logger",
+      "location" : "https://github.com/Kuniwak/swift-logger.git",
       "state" : {
         "revision" : "109a9f7a47b40d8d82afa8a692472217c4da55a1",
         "version" : "2.0.0"
