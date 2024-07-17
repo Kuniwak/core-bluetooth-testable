@@ -47,7 +47,7 @@ public class SpyCentralManager: CentralManagerProtocol {
     
     
     // MARK: - Initializers
-    public init(inheriting inherited: CentralManagerProtocol) {
+    public init(inheriting inherited: any CentralManagerProtocol) {
         self.inherited = inherited
     }
     
