@@ -106,7 +106,7 @@ public class Peripheral: NSObject, PeripheralProtocol {
     
     private let didDiscoverCharacteristicsForServiceSubject: PassthroughSubject<(characteristics: [any CharacteristicProtocol]?, service: any ServiceProtocol, error: (any Error)?), Never>
     public let didDiscoverCharacteristicsForService: AnyPublisher<(characteristics: [any CharacteristicProtocol]?, service: any ServiceProtocol, error: (any Error)?), Never>
-    
+
     private let didUpdateValueForCharacteristicSubject: PassthroughSubject<(characteristic: any CharacteristicProtocol, error: (any Error)?), Never>
     public let didUpdateValueForCharacteristic: AnyPublisher<(characteristic: any CharacteristicProtocol, error: (any Error)?), Never>
     
@@ -132,11 +132,11 @@ public class Peripheral: NSObject, PeripheralProtocol {
     private let peripheral: CBPeripheral
     public var _wrapped: CBPeripheral? { peripheral }
     
-    private let logger: LoggerProtocol
+    private let logger: any LoggerProtocol
     
 
     // MARK: - Initializers
-    private init(wrappingPeripheral peripheral: CBPeripheral, loggingBy logger: LoggerProtocol) {
+    private init(wrappingPeripheral peripheral: CBPeripheral, loggingBy logger: any LoggerProtocol) {
         guard peripheral.delegate == nil else {
             fatalError("CBPeripheral instance already has a delegate")
         }
@@ -206,7 +206,7 @@ public class Peripheral: NSObject, PeripheralProtocol {
     }
     
     
-    public static func from(peripheral: CBPeripheral, logger: LoggerProtocol) -> Peripheral {
+    public static func from(peripheral: CBPeripheral, logger: any LoggerProtocol) -> Peripheral {
         if let delegate = peripheral.delegate {
             if let peripheral = delegate as? Peripheral {
                 return peripheral
@@ -344,20 +344,20 @@ extension Peripheral: CBPeripheralDelegate {
     }
     
     
-    public func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: (any Error)?) {
         logger.trace()
         didReadRSSISubject.send((RSSI, error))
     }
     
     
-    public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: (any Error)?) {
         logger.trace()
         let services = peripheral.services.map { $0.map { Service.init(wrapping: $0, logger: logger) } }
         didDiscoverServicesSubject.send((services, error))
     }
     
     
-    public func peripheral(_ peripheral: CBPeripheral, didDiscoverIncludedServicesFor service: CBService, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverIncludedServicesFor service: CBService, error: (any Error)?) {
         logger.trace()
         
         let includedServices = service.includedServices.map { $0.map { Service.init(wrapping: $0, logger: logger) } }
@@ -365,7 +365,7 @@ extension Peripheral: CBPeripheralDelegate {
     }
     
     
-    public func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: (any Error)?) {
         logger.trace()
         
         let characteristics = service.characteristics.map { $0.map { Characteristic.init(wrapping: $0, logger: logger) } }
@@ -373,13 +373,19 @@ extension Peripheral: CBPeripheralDelegate {
     }
     
     
-    public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: (any Error)?) {
+        let descriptors = characteristic.descriptors.map { $0.map { Descriptor.init(wrapping: $0, logger: logger) } }
+        didDiscoverDescriptorsForCharacteristicSubject.send((descriptors, Characteristic(wrapping: characteristic, logger: logger), error))
+    }
+    
+    
+    public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: (any Error)?) {
         logger.trace()
         didUpdateValueForCharacteristicSubject.send((Characteristic(wrapping: characteristic, logger: logger), error))
     }
     
     
-    public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: (any Error)?) {
         logger.trace()
         didWriteValueForCharacteristicSubject.send((Characteristic(wrapping: characteristic, logger: logger), error))
     }

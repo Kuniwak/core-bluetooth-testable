@@ -75,11 +75,11 @@ public class CentralManager: NSObject, CentralManagerProtocol {
     private let centralManager: CBCentralManager
     public var _wrapped: CBCentralManager? { centralManager }
     
-    private let logger: LoggerProtocol
+    private let logger: any LoggerProtocol
 
     
     // MARK: - Initializers
-    public init(queue: DispatchQueue? = nil, options: [String: Any]? = nil, loggingBy logger: LoggerProtocol) {
+    public init(queue: DispatchQueue? = nil, options: [String: Any]? = nil, loggingBy logger: any LoggerProtocol) {
         let central = CBCentralManager(delegate: nil, queue: queue, options: options)
         self.centralManager = central
         
@@ -213,13 +213,13 @@ extension CentralManager: CBCentralManagerDelegate {
     }
     
     
-    public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+    public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: (any Error)?) {
         logger.trace()
         didFailToConnectPeripheralSubject.send((Peripheral.from(peripheral: peripheral, logger: logger), error))
     }
     
     
-    public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: (any Error)?) {
         logger.trace()
         didDisconnectPeripheralSubject.send((Peripheral.from(peripheral: peripheral, logger: logger), error))
     }
