@@ -54,8 +54,8 @@ public class StubPeripheral: PeripheralProtocol {
     public let isReadyToSendWriteWithoutResponseSubject: PassthroughSubject<Bool, Never>
     public let isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never>
     
-    public let didOpenL2CAPChannelSubject: PassthroughSubject<(channel: CBL2CAPPSM, error: (any Error)?), Never>
-    public let didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPPSM, error: (any Error)?), Never>
+    public let didOpenL2CAPChannelSubject: PassthroughSubject<(channel: CBL2CAPChannel?, error: (any Error)?), Never>
+    public let didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPChannel?, error: (any Error)?), Never>
     
     
     // MARK: - Properties for Internal Use
@@ -133,7 +133,7 @@ public class StubPeripheral: PeripheralProtocol {
         self.isReadyToSendWriteWithoutResponseSubject = isReadyToSendWriteWithoutResponseSubject
         self.isReadyToSendWriteWithoutResponse = isReadyToSendWriteWithoutResponseSubject.eraseToAnyPublisher()
         
-        let didOpenL2CAPChannelSubject = PassthroughSubject<(channel: CBL2CAPPSM, error: (any Error)?), Never>()
+        let didOpenL2CAPChannelSubject = PassthroughSubject<(channel: CBL2CAPChannel?, error: (any Error)?), Never>()
         self.didOpenL2CAPChannelSubject = didOpenL2CAPChannelSubject
         self.didOpenL2CAPChannel = didOpenL2CAPChannelSubject.eraseToAnyPublisher()
     }

@@ -41,7 +41,7 @@ public protocol PeripheralProtocol {
     var didDiscoverDescriptorsForCharacteristic: AnyPublisher<(descriptors: [any DescriptorProtocol]?, characteristic: any CharacteristicProtocol, error: (any Error)?), Never> { get }
     var didUpdateValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never> { get }
     var isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never> { get }
-    var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPPSM, error: (any Error)?), Never> { get }
+    var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPChannel?, error: (any Error)?), Never> { get }
     
     // MARK: - Properties for Internal Use
     var _wrapped: CBPeripheral? { get }
@@ -122,11 +122,14 @@ public class Peripheral: NSObject, PeripheralProtocol {
     private let didUpdateValueForDescriptorSubject: PassthroughSubject<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
     public let didUpdateValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
     
+    private let didWriteValueForDescriptorSubject: PassthroughSubject<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
+    public let didWriteValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
+    
     private let isReadyToSendWriteWithoutResponseSubject: PassthroughSubject<Bool, Never>
     public let isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never>
     
-    private let didOpenL2CAPChannelSubject: PassthroughSubject<(channel: CBL2CAPPSM, error: (any Error)?), Never>
-    public let didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPPSM, error: (any Error)?), Never>
+    private let didOpenL2CAPChannelSubject: PassthroughSubject<(channel: CBL2CAPChannel?, error: (any Error)?), Never>
+    public let didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPChannel?, error: (any Error)?), Never>
     
     // MARK: - Properties for Internal Use
     private let peripheral: CBPeripheral
@@ -192,11 +195,15 @@ public class Peripheral: NSObject, PeripheralProtocol {
         self.didUpdateValueForDescriptorSubject = didUpdateValueForDescriptorSubject
         self.didUpdateValueForDescriptor = didUpdateValueForDescriptorSubject.eraseToAnyPublisher()
         
+        let didWriteValueForDescriptorSubject = PassthroughSubject<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>()
+        self.didWriteValueForDescriptorSubject = didWriteValueForDescriptorSubject
+        self.didWriteValueForDescriptor = didWriteValueForDescriptorSubject.eraseToAnyPublisher()
+
         let isReadyToSendWriteWithoutResponseSubject = PassthroughSubject<Bool, Never>()
         self.isReadyToSendWriteWithoutResponseSubject = isReadyToSendWriteWithoutResponseSubject
         self.isReadyToSendWriteWithoutResponse = isReadyToSendWriteWithoutResponseSubject.eraseToAnyPublisher()
         
-        let didOpenL2CAPChannelSubject = PassthroughSubject<(channel: CBL2CAPPSM, error: (any Error)?), Never>()
+        let didOpenL2CAPChannelSubject = PassthroughSubject<(channel: CBL2CAPChannel?, error: (any Error)?), Never>()
         self.didOpenL2CAPChannelSubject = didOpenL2CAPChannelSubject
         self.didOpenL2CAPChannel = didOpenL2CAPChannelSubject.eraseToAnyPublisher()
         
@@ -385,9 +392,39 @@ extension Peripheral: CBPeripheralDelegate {
     }
     
     
+    public func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: (any Error)?) {
+        logger.trace()
+        didUpdateNotificationStateForCharacteristicSubject.send((Characteristic(wrapping: characteristic, logger: logger), error))
+    }
+
+    
     public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: (any Error)?) {
         logger.trace()
         didWriteValueForCharacteristicSubject.send((Characteristic(wrapping: characteristic, logger: logger), error))
+    }
+    
+    
+    public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: (any Error)?) {
+        logger.trace()
+        didWriteValueForDescriptorSubject.send((Descriptor(wrapping: descriptor, logger: logger), error))
+    }
+    
+    
+    public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor descriptor: CBDescriptor, error: (any Error)?) {
+        logger.trace()
+        didUpdateValueForDescriptorSubject.send((Descriptor(wrapping: descriptor, logger: logger), error))
+    }
+    
+    
+    public func peripheralIsReady(toSendWriteWithoutResponse peripheral: CBPeripheral) {
+        logger.trace()
+        isReadyToSendWriteWithoutResponseSubject.send(true)
+    }
+    
+    
+    public func peripheral(_ peripheral: CBPeripheral, didOpen channel: CBL2CAPChannel?, error: (any Error)?) {
+        logger.trace()
+        didOpenL2CAPChannelSubject.send((channel: channel, error: error))
     }
 }
 
@@ -430,7 +467,7 @@ public struct AnyPeripheral: PeripheralProtocol {
     public var didDiscoverDescriptorsForCharacteristic: AnyPublisher<(descriptors: [any DescriptorProtocol]?, characteristic: any CharacteristicProtocol, error: (any Error)?), Never> { base.didDiscoverDescriptorsForCharacteristic }
     public var didUpdateValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never> { base.didUpdateValueForDescriptor }
     public var isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never> { base.isReadyToSendWriteWithoutResponse }
-    public var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPPSM, error: (any Error)?), Never> { base.didOpenL2CAPChannel }
+    public var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPChannel?, error: (any Error)?), Never> { base.didOpenL2CAPChannel }
     
     public var _wrapped: CBPeripheral? { base._wrapped }
     
