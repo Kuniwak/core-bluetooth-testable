@@ -104,7 +104,7 @@ public class SpyPeripheral: PeripheralProtocol {
         inherited.isReadyToSendWriteWithoutResponse
     }
     
-    public var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPPSM, error: (any Error)?), Never> {
+    public var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPChannel?, error: (any Error)?), Never> {
         inherited.didOpenL2CAPChannel
     }
     
