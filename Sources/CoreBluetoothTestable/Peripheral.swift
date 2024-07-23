@@ -40,6 +40,7 @@ public protocol PeripheralProtocol {
     var didUpdateNotificationStateForCharacteristic: AnyPublisher<(characteristic: any CharacteristicProtocol, error: (any Error)?), Never> { get }
     var didDiscoverDescriptorsForCharacteristic: AnyPublisher<(descriptors: [any DescriptorProtocol]?, characteristic: any CharacteristicProtocol, error: (any Error)?), Never> { get }
     var didUpdateValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never> { get }
+    var didWriteValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never> { get }
     var isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never> { get }
     var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPChannel?, error: (any Error)?), Never> { get }
     
@@ -466,6 +467,7 @@ public struct AnyPeripheral: PeripheralProtocol {
     public var didUpdateNotificationStateForCharacteristic: AnyPublisher<(characteristic: any CharacteristicProtocol, error: (any Error)?), Never> { base.didUpdateNotificationStateForCharacteristic }
     public var didDiscoverDescriptorsForCharacteristic: AnyPublisher<(descriptors: [any DescriptorProtocol]?, characteristic: any CharacteristicProtocol, error: (any Error)?), Never> { base.didDiscoverDescriptorsForCharacteristic }
     public var didUpdateValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never> { base.didUpdateValueForDescriptor }
+    public var didWriteValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never> { base.didWriteValueForDescriptor }
     public var isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never> { base.isReadyToSendWriteWithoutResponse }
     public var didOpenL2CAPChannel: AnyPublisher<(channel: CBL2CAPChannel?, error: (any Error)?), Never> { base.didOpenL2CAPChannel }
     

@@ -100,6 +100,10 @@ public class SpyPeripheral: PeripheralProtocol {
         inherited.didUpdateValueForDescriptor
     }
     
+    public var didWriteValueForDescriptor: AnyPublisher<(descriptor: any CoreBluetoothTestable.DescriptorProtocol, error: (any Error)?), Never> {
+        inherited.didWriteValueForDescriptor
+    }
+    
     public var isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never> {
         inherited.isReadyToSendWriteWithoutResponse
     }

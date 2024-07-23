@@ -51,6 +51,9 @@ public class StubPeripheral: PeripheralProtocol {
     public let didUpdateValueForDescriptorSubject: PassthroughSubject<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
     public let didUpdateValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
     
+    public let didWriteValueForDescriptorSubject: PassthroughSubject<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
+    public let didWriteValueForDescriptor: AnyPublisher<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>
+
     public let isReadyToSendWriteWithoutResponseSubject: PassthroughSubject<Bool, Never>
     public let isReadyToSendWriteWithoutResponse: AnyPublisher<Bool, Never>
     
@@ -129,6 +132,10 @@ public class StubPeripheral: PeripheralProtocol {
         self.didUpdateValueForDescriptorSubject = didUpdateValueForDescriptorSubject
         self.didUpdateValueForDescriptor = didUpdateValueForDescriptorSubject.eraseToAnyPublisher()
         
+        let didWriteValueForDescriptorSubject = PassthroughSubject<(descriptor: any DescriptorProtocol, error: (any Error)?), Never>()
+        self.didWriteValueForDescriptorSubject = didWriteValueForDescriptorSubject
+        self.didWriteValueForDescriptor = didWriteValueForDescriptorSubject.eraseToAnyPublisher()
+
         let isReadyToSendWriteWithoutResponseSubject = PassthroughSubject<Bool, Never>()
         self.isReadyToSendWriteWithoutResponseSubject = isReadyToSendWriteWithoutResponseSubject
         self.isReadyToSendWriteWithoutResponse = isReadyToSendWriteWithoutResponseSubject.eraseToAnyPublisher()
